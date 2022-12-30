@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Tripmate is a application for trip planning",
   "main": "build/app.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "devStart": "concurrently \"npx tsc -w\" \"nodemon ./build/app.js\""
   },

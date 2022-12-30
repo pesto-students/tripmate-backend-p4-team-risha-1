@@ -23,5 +23,6 @@ router.post("/", (req, res) => {
         name: req.body.name,
     };
     users.push(newUser);
+    res.send("user created");
 });
 exports.default = router;
