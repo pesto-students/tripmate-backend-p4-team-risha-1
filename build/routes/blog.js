@@ -17,6 +17,7 @@ router.post("/addPost", (req, res) => {
         tags: req.body.tags,
         author: req.body.author,
         catagory: req.body.catagory,
+        date: req.body.date
     };
     blogs.push(newblog);
     res.send("blog added");

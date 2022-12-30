@@ -8,8 +8,8 @@ interface Blog {
     tags: string;
     author: any;
     catagory:String;
-    /*img: string;
-    date :Date;*/
+    /*img: string;*/
+    date :string;
   }
 
   let blogs: any = [];
@@ -25,6 +25,7 @@ interface Blog {
         tags: req.body.tags,
         author: req.body.author,
         catagory: req.body.catagory,
+        date:req.body.date
       };
       blogs.push(newblog);
       res.send("blog added");
