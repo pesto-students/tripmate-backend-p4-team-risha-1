@@ -24,6 +24,6 @@ const createUser = (req, res) => {
         name: req.body.name,
     };
     users.push(newUser);
-    res.send("new user created");
+    res.send("Congratulation.....🎉✨new user created");
 };
 exports.createUser = createUser;
