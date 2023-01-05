@@ -6,7 +6,6 @@ const expressfb = require("express");
 const functions = require("firebase-functions");
 const { Storage } = require("@google-cloud/storage");
 const formidable = require("formidable-serverless");
-const multer = require("multer");
 require("dotenv").config();
 
 
@@ -44,6 +43,7 @@ const storage = new Storage
   keyFilename: "./credfb.json",
 }
 );
+const bucket = storage.bucket("gs://uploadphotos-4ccff.appspot.com");
 
 interface Blog {
     id: string;
@@ -63,7 +63,8 @@ interface Blog {
   let blogs: any = [];
 
   router.get("/", (req: Request, res: Response) => {
-    res.status(200).json(blogs);
+    res.status(200).json( "https://firebasestorage.googleapis.com/v0/b/uploadphotos-4ccff.appspot.com/o/blogs%2Fbrowserdetail1.png?alt=media&token=3021401e-912f-4acb-bd83-a06c5df632d7");
+   
   });
 
   router.post("/addPost",(req:Request, res:Response)=>{
@@ -110,8 +111,6 @@ interface Blog {
                 error: err,
               });
             }
-
-            const bucket = storage.bucket("gs://uploadphotos-4ccff.appspot.com");
             if (profileImage.size == 0) {
               // do nothing
             } else {
@@ -127,7 +126,7 @@ interface Blog {
               // profile image url
               imageUrl =
                 downLoadPath +
-                encodeURIComponent(imageResponse[0].name) +new Date().toString()+
+                encodeURIComponent(imageResponse[0].name) +
                 "?alt=media&token=" +newblog1.id;
             }
             let newblog: Blog1 = {
@@ -152,6 +151,8 @@ interface Blog {
   async function uploadOnfireStore(blogRef: any, docID: any, newblog: Blog1,res:Response,newblog1:Blog) {
     console.log("in uploadimage function");
     console.log(newblog1);
+
+    
     await blogRef
             .doc(docID)
             .set(newblog, { merge: true })
@@ -164,6 +165,7 @@ interface Blog {
                 error: {},
               })
             });
+            
   }
 
   router.put("/deletePost",(req:Request, res:Response)=>{
