@@ -19,6 +19,7 @@ const expressfb = require("express");
 const functions = require("firebase-functions");
 const { Storage } = require("@google-cloud/storage");
 const formidable = require("formidable-serverless");
+const multer = require("multer");
 require("dotenv").config();
 const router = express_1.default.Router();
 const app = expressfb();
@@ -69,10 +70,19 @@ router.post("/addPost1", (req, res) => {
             let uuid = UUID();
             let downLoadPath = "";
             const profileImage = files.profileImage;
+            let newblog1 = {
+                id: (0, uuid_1.v4)().toString(),
+                postContent: fields.postContent,
+                tags: fields.tags,
+                author: fields.author,
+                catagory: fields.catagory,
+                photoUrl: "",
+                date: fields.date
+            };
+            console.log(fields);
             // url of the uploaded image
             let imageUrl;
             const docID = blogRef.doc().id;
-            console.log("in parse");
             if (err) {
                 return res.status(400).json({
                     message: "There was an error parsing the files",
@@ -90,29 +100,21 @@ router.post("/addPost1", (req, res) => {
                     resumable: true,
                     metadata: {
                         metadata: {
-                            firebaseStorageDownloadTokens: uuid,
+                            firebaseStorageDownloadTokens: newblog1.id,
                         },
                     },
                 });
                 // profile image url
                 imageUrl =
                     downLoadPath +
-                        encodeURIComponent(imageResponse[0].name) +
-                        "?alt=media&token=" + uuid;
+                        encodeURIComponent(imageResponse[0].name) + new Date().toString() +
+                        "?alt=media&token=" + newblog1.id;
             }
-            console.log(imageUrl);
             let newblog = {
-                id: uuid.toString(),
-                postContent: files.postContent,
-                tags: files.tags,
-                author: files.author,
-                catagory: files.catagory,
-                photoUrl: profileImage.size == 0 ? "" : imageUrl,
-                date: files.date
+                photoUrl: profileImage.size == 0 ? "" : imageUrl
             };
-            console.log(imageUrl);
-            console.log(newblog.photoUrl);
-            uploadOnfireStore(blogRef, docID, newblog, res);
+            newblog1.photoUrl = newblog.photoUrl;
+            uploadOnfireStore(blogRef, docID, newblog, res, newblog1);
         }));
     }
     catch (err) {
@@ -123,9 +125,10 @@ router.post("/addPost1", (req, res) => {
         });
     }
 });
-function uploadOnfireStore(blogRef, docID, newblog, res) {
+function uploadOnfireStore(blogRef, docID, newblog, res, newblog1) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("in uploadimage function");
+        console.log(newblog1);
         yield blogRef
             .doc(docID)
             .set(newblog, { merge: true })
@@ -133,7 +136,7 @@ function uploadOnfireStore(blogRef, docID, newblog, res) {
             // return response to users
             res.status(200).send({
                 message: "user created successfully",
-                data: newblog,
+                data: newblog1,
                 error: {},
             });
         });

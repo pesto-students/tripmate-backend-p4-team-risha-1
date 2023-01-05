@@ -6,6 +6,7 @@ const expressfb = require("express");
 const functions = require("firebase-functions");
 const { Storage } = require("@google-cloud/storage");
 const formidable = require("formidable-serverless");
+const multer = require("multer");
 require("dotenv").config();
 
 
@@ -91,13 +92,14 @@ interface Blog {
             const profileImage = files.profileImage;
             let newblog1: Blog = {
               id: uuidv4().toString(),
-              postContent: files.postContent,
-              tags: files.tags,
-              author: files.author,
-              catagory: files.catagory,
+              postContent: fields.postContent,
+              tags: fields.tags,
+              author: fields.author,
+              catagory: fields.catagory,
               photoUrl:"",
-              date:files.date
+              date:fields.date
             };
+            console.log(fields);
             // url of the uploaded image
            let imageUrl;
             const docID = blogRef.doc().id;
@@ -160,7 +162,7 @@ interface Blog {
                 message: "user created successfully",
                 data: newblog1,
                 error: {},
-              }).json(newblog1);
+              })
             });
   }
 
