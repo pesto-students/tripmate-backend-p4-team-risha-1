@@ -145,8 +145,21 @@ export const deleteblogs =async (req: Request, res: Response) => {
   console.log("delet blogs");
   const id   = req.body._id; 
   const blog = await Blog.find({"_id": ObjectId(id)});
-  const file = bucket.file("blogs/"+ blog[0].photoName );
-  file.delete();
-  res.status(200).json(await Blog.deleteOne({_id: req.body._id}));
+  try{
+    if(blog!=null){
+      console.log(blog);
+      try{
+        const file = bucket.file("blogs/"+ blog[0].photoName );
+        file.delete();
+      }catch(err){
+        res.status(200).json(blog[0].photoName+"photo not found");
+      }    
+      res.status(200).json(await Blog.deleteOne({_id: req.body._id})); 
+    }
+  }catch(err){
+    res.status(200).json( req.body._id+" is not found")
+  }
+  
+ 
 };
 export default router;
