@@ -19,16 +19,10 @@ export const getUsers = async (req: Request, res: Response) => {
   res.status(200).json(users);
 };
 
-async function hashPassword(plain: string) {
-  const hash: string = await bcrypt.hash(plain, 10);
-  return hash;
-}
-
 export const createUser = async (req: Request, res: Response) => {
   const saltRound = 10;
   const password: string = req.body.password;
   console.log(password);
-  // let encryptedUser = hashPassword(password);
   let newUser = new User({
     username: req.body.username,
     email: req.body.email,
