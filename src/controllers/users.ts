@@ -1,32 +1,47 @@
 import { v4 as uuidv4 } from "uuid";
 import { Application, Request, Response } from "express";
 import bcrypt from "bcrypt";
+import User from "../models/userModel";
 
 interface Users {
-  id: string;
   username: string;
   email: string;
-  password: any;
+  password: string;
   name: string;
+  isAdmin: boolean;
 }
 
 let users: any = [];
-export const getUsers = (req: Request, res: Response) => {
+
+export const getUsers = async (req: Request, res: Response) => {
+  //res.status(200).json(users);
+  const users = await User.find({});
   res.status(200).json(users);
 };
 
-export const createUser = (req: Request, res: Response) => {
+async function hashPassword(plain: string) {
+  const hash: string = await bcrypt.hash(plain, 10);
+  return hash;
+}
+
+export const createUser = async (req: Request, res: Response) => {
   const saltRound = 10;
   const password: string = req.body.password;
-  let encryptedPassword: string;
-  //bcrypt.genSalt(saltRound).then(())
-  let newUser: Users = {
-    id: uuidv4().toString(),
+  console.log(password);
+  let newUser = new User({
     username: req.body.username,
     email: req.body.email,
-    password: bcrypt.hash(req.body.password, 10, (err, hash) => hash),
+    password: bcrypt.hashSync(password, 10),
     name: req.body.name,
-  };
-  users.push(newUser);
-  res.send("new user created");
+    isAdmin: false,
+  });
+
+  newUser.save(function (err, result) {
+    if (err) {
+      console.log(err);
+      res.send(err);
+    } else {
+      res.send("user created" + result);
+    }
+  });
 };

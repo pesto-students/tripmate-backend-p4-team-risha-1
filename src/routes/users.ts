@@ -1,6 +1,7 @@
 import express, { Router, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { getUsers, createUser } from "../controllers/users";
+import asyncHandler from "express-async-handler";
 
 const router: Router = express.Router();
 
@@ -10,9 +11,9 @@ let password: (x: string) => string = function (x) {
 
 let users: any = [];
 
-router.get("/", getUsers);
+router.get("/", asyncHandler(getUsers));
 
-router.post("/", createUser);
+router.post("/", asyncHandler(createUser));
 
 router.patch("/:id", (req: Request, res: Response) => {
   res.send(users.filter((user: any) => user.id === req.params.id));
