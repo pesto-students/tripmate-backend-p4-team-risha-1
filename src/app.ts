@@ -1,6 +1,8 @@
 import express, { Application, Request, Response } from "express";
 import userRouter from "./routes/users";
 import tourRouter from "./routes/tour";
+import notesRoter from "./routes/notes";
+import favTour from "./routes/favTour";
 import * as dotenv from "dotenv";
 import mongoose from "mongoose";
 
@@ -26,6 +28,7 @@ app.use(express.json());
 app.use("/users", userRouter);
 app.use("/tours", tourRouter);
 app.use("/blog",blogRouter);
+app.use("/notes",notesRoter)
 
 
 app.listen(PORT, () => {
