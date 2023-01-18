@@ -26,9 +26,9 @@ const ObjectId  = require('mongodb').ObjectID;
 
   export const deletefavTour =async (req: Request, res: Response) => {
   const id   = req.body._id; 
-  const note = await FavTour.find({"_id": ObjectId(id)});
+  const favTour = await FavTour.find({"_id": ObjectId(id)});
   try{
-    if(note!=null){
+    if(favTour!=null){
       res.status(200).json(await FavTour.deleteOne({_id: req.body._id})); 
     }
   }catch(err){
