@@ -10,8 +10,8 @@ const ObjectId  = require('mongodb').ObjectID;
 
   export const setfavTourdetails = (req: Request, res: Response) => {
     let favTour = new FavTour({
-      user_id:req.body.tour_id,
-      tour_id: req.body.notes
+      user_id:req.body.user_id,
+      tour_id: req.body.tour_id
     }
     );
     favTour.save(function (err, result) {
@@ -24,7 +24,7 @@ const ObjectId  = require('mongodb').ObjectID;
     });
   };
 
-  export const favTournotes =async (req: Request, res: Response) => {
+  export const deletefavTour =async (req: Request, res: Response) => {
   const id   = req.body._id; 
   const note = await FavTour.find({"_id": ObjectId(id)});
   try{

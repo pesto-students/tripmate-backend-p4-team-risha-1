@@ -1,11 +1,11 @@
 import express, { Router, Request, Response } from "express";
-import { getfavtour, createfavTour ,deletefavtour} from "../controllers/favTour";
+import { getfavTourdetails, setfavTourdetails ,deletefavTour} from "../controllers/favTour";
 
 const router: Router = express.Router();
 
-router.get("/", getfavtour);
+router.get("/", getfavTourdetails);
 
-router.post("/", createfavTour);
-router.put("/", deletefavtour);
+router.post("/", setfavTourdetails);
+router.put("/", deletefavTour);
 
 export default router;

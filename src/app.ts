@@ -23,12 +23,12 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use(express.json());
-// app.use("auth");
-//
+
 app.use("/users", userRouter);
 app.use("/tours", tourRouter);
 app.use("/blog",blogRouter);
-app.use("/notes",notesRoter)
+app.use("/notes",notesRoter);
+app.use("/favTour",favTour);
 
 
 app.listen(PORT, () => {
