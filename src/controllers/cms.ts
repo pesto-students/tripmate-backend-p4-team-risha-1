@@ -5,18 +5,18 @@ const ObjectId  = require('mongodb').ObjectID;
 
 
   export const getCMSdetails = async(req: Request, res: Response) => {
-    const notes = await CMS.find({});
-    res.status(200).json(notes);
+    const cms = await CMS.find({});
+    res.status(200).json(cms);
   };
 
   export const setcmsdetails = (req: Request, res: Response) => {
-    let newNotes = new CMS({
+    let newcms = new CMS({
         front_page_detail:req.body.front_page_detail,
         popular: req.body.popular,
         about_us: req.body.about_us
     }
     );
-    newNotes.save(function (err, result) {
+    newcms.save(function (err, result) {
       if (err) {
         console.log(err);
         res.send(err);
@@ -28,9 +28,9 @@ const ObjectId  = require('mongodb').ObjectID;
 
   export const deletecms =async (req: Request, res: Response) => {
   const id   = req.body._id; 
-  const note = await CMS.find({"_id": ObjectId(id)});
+  const cms = await CMS.find({"_id": ObjectId(id)});
   try{
-    if(note!=null){
+    if(cms!=null){
       res.status(200).json(await CMS.deleteOne({_id: req.body._id})); 
     }
   }catch(err){

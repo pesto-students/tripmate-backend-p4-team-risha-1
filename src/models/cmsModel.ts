@@ -16,6 +16,6 @@ const cmsSchema = new Schema(
     }
 );
 
-const CMS = model("", cmsSchema);
+const CMS = model("CMS", cmsSchema);
 
 export default CMS;
