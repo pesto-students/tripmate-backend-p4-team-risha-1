@@ -1,11 +1,11 @@
 import express, { Router, Request, Response } from "express";
-import { getblogs, createblog ,deleteblogs} from "../controllers/blog";
+import { getfavtour, createfavTour ,deletefavtour} from "../controllers/favTour";
 
 const router: Router = express.Router();
 
-router.get("/", getblogs);
+router.get("/", getfavtour);
 
-router.post("/", createblog);
-router.put("/", deleteblogs);
+router.post("/", createfavTour);
+router.put("/", deletefavtour);
 
 export default router;

@@ -3,8 +3,7 @@ import { Application, Request, Response } from "express";
 import Notes from "../models/notesModel";
 const ObjectId  = require('mongodb').ObjectID;
 
- 
-  let tours: any = [];
+
   export const getnotesdetails = async(req: Request, res: Response) => {
     const notes = await Notes.find({});
     res.status(200).json(notes);
