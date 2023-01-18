@@ -4,6 +4,7 @@ import tourRouter from "./routes/tour";
 import notesRoter from "./routes/notes";
 import favTour from "./routes/favTour";
 import cms from "./routes/cms";
+import explore from "./routes/explore";
 import * as dotenv from "dotenv";
 import mongoose from "mongoose";
 
@@ -31,6 +32,7 @@ app.use("/blog",blogRouter);
 app.use("/notes",notesRoter);
 app.use("/favTour",favTour);
 app.use("/cms",cms);
+app.use("/explore",explore);
 
 
 app.listen(PORT, () => {

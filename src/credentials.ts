@@ -17,3 +17,5 @@ const storage = new Storage({
 }
 );
 export const bucket = getStorage().bucket();
+export const photoUrl = "https://firebasestorage.googleapis.com/v0/b/uploadphotos-4ccff.appspot.com/o/";
+
