@@ -6,7 +6,7 @@ const expressfb = require("express");
 const functions = require("firebase-functions");
 const { Storage } = require("@google-cloud/storage");
 const formidable = require("formidable-serverless");
-const ObjectId  = require('mongodb').ObjectID;
+const ObjectId = require("mongodb").ObjectID;
 
 import credentials from "../credentials";
 require("dotenv").config();
@@ -24,9 +24,7 @@ var admin = require("firebase-admin");
 const photoUrl =
   "https://firebasestorage.googleapis.com/v0/b/uploadphotos-4ccff.appspot.com/o/";
 
-var serviceAccount = {
-  //ur config
-};
+var serviceAccount = credentials;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -46,11 +44,10 @@ interface Blog1 {
 
 //let blogs: any = [];
 
-export const getblogs =async (req: Request, res: Response) => {
+export const getblogs = async (req: Request, res: Response) => {
   const blogs = await Blog.find({});
   res.status(200).json(blogs);
 };
-
 
 export const createblog = (req: Request, res: Response) => {
   const form = new formidable.IncomingForm({ multiples: true });
@@ -59,9 +56,9 @@ export const createblog = (req: Request, res: Response) => {
       let uuid = UUID();
       let downLoadPath = "";
       const profileImage = files.profileImage;
-      let blog = new Blog  ({
+      let blog = new Blog({
         photoUrl: "",
-        photoName:"",
+        photoName: "",
         postContent: fields.postContent,
         tags: fields.tags,
         author: fields.author,
@@ -132,25 +129,23 @@ async function uploadOnfireStore(
     });
 }
 
-export const deleteblogs =async (req: Request, res: Response) => {
+export const deleteblogs = async (req: Request, res: Response) => {
   console.log("delet blogs");
-  const id   = req.body._id; 
-  const blog = await Blog.find({"_id": ObjectId(id)});
-  try{
-    if(blog!=null){
+  const id = req.body._id;
+  const blog = await Blog.find({ _id: ObjectId(id) });
+  try {
+    if (blog != null) {
       console.log(blog);
-      try{
-        const file = bucket.file("blogs/"+ blog[0].photoName );
+      try {
+        const file = bucket.file("blogs/" + blog[0].photoName);
         file.delete();
-      }catch(err){
-        res.status(200).json(blog[0].photoName+"photo not found");
-      }    
-      res.status(200).json(await Blog.deleteOne({_id: req.body._id})); 
+      } catch (err) {
+        res.status(200).json(blog[0].photoName + "photo not found");
+      }
+      res.status(200).json(await Blog.deleteOne({ _id: req.body._id }));
     }
-  }catch(err){
-    res.status(200).json( req.body._id+" is not found")
+  } catch (err) {
+    res.status(200).json(req.body._id + " is not found");
   }
-  
- 
 };
 export default router;
