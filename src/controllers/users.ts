@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from "uuid";
 import { Application, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/userModel";
+const ObjectId  = require('mongodb').ObjectID;
+
 
 interface Users {
   username: string;
@@ -11,7 +13,6 @@ interface Users {
   isAdmin: boolean;
 }
 
-let users: any = [];
 
 export const getUsers = async (req: Request, res: Response) => {
   //res.status(200).json(users);
@@ -44,4 +45,27 @@ export const createUser = async (req: Request, res: Response) => {
       res.send("user created" + result);
     }
   });
+};
+
+export const deleteuser =async (req: Request, res: Response) => {
+  const id   = req.body._id; 
+  const cms = await User.find({"_id": ObjectId(id)});
+  try{
+    if(cms!=null){
+      res.status(200).json(await User.deleteOne({_id: req.body._id})); 
+    }
+  }catch(err){
+    res.status(200).json( req.body._id+" is not found")
+  }
+};
+
+export const updatecms =async (req: Request, res: Response) => {
+  const id   = req.body._id; 
+  try{
+    await User.findByIdAndUpdate(id,req.body);
+    res.send(req.body);
+  }catch(err){
+    res.send(err); 
+  }
+ 
 };

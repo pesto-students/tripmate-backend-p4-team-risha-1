@@ -128,4 +128,64 @@ export const deleteblogs =async (req: Request, res: Response) => {
   
  
 };
+
+export const updateImage = (req: Request, res: Response) => {
+  const form = new formidable.IncomingForm({ multiples: true });
+  try {
+    form.parse(req, async (err: any, fields: any, files: any) => {
+      let downLoadPath = "";
+      const profileImage = files.profileImage;
+      let blog = new Blog  ({
+        photoUrl: "",
+        photoName:"",
+        postContent: fields.postContent,
+        tags: fields.tags,
+        author: fields.author,
+        catagory: fields.catagory,
+        date: fields.date,
+      });
+      let imageUrl;
+      const docID = blogRef.doc().id;
+      if (err) {
+        return res.status(400).json({
+          message: "There was an error parsing the files",
+          data: {},
+          error: err,
+        });
+      }
+      if (profileImage.size == 0) {
+        // do nothing
+      } else {
+        const imageResponse = await bucket.upload(profileImage.path, {
+          destination: `blogs/${profileImage.name}`,
+          resumable: true,
+          metadata: {
+            metadata: {
+              firebaseStorageDownloadTokens: blog.id,
+            },
+          },
+        });
+        // profile image url
+        imageUrl =
+          downLoadPath +
+          encodeURIComponent(imageResponse[0].name) +
+          "?alt=media&token=" +
+          blog.id;
+      }
+      let newblog: Blog1 = {
+        photoUrl: profileImage.size == 0 ? "" : imageUrl,
+      };
+      blog.photoUrl = photoUrl + newblog.photoUrl;
+      blog.photoName = profileImage.name;
+      uploadOnfireStore(blogRef, docID, newblog, res, blog);
+    });
+  } catch (err) {
+    res.send({
+      message: "Something went wrong",
+      data: {},
+      error: err,
+    });
+  }
+};
+
 export default router;
