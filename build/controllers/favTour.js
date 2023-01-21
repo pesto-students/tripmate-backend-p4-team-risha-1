@@ -12,57 +12,51 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateTour = exports.deletetour = exports.setTourdetails = exports.gettourdetails = void 0;
-const tourModel_1 = __importDefault(require("../models/tourModel"));
+exports.updatefavTour = exports.deletefavTour = exports.setfavTourdetails = exports.getfavTourdetails = void 0;
+const favtourModel_1 = __importDefault(require("../models/favtourModel"));
 const ObjectId = require('mongodb').ObjectID;
-const gettourdetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const tour = yield tourModel_1.default.find({});
-    res.status(200).json(tour);
+const getfavTourdetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const favTour = yield favtourModel_1.default.find({});
+    res.status(200).json(favTour);
 });
-exports.gettourdetails = gettourdetails;
-const setTourdetails = (req, res) => {
-    let newTour = new tourModel_1.default({
+exports.getfavTourdetails = getfavTourdetails;
+const setfavTourdetails = (req, res) => {
+    let favTour = new favtourModel_1.default({
         user_id: req.body.user_id,
-        tourName: req.body.tourName,
-        tourDetails: req.body.tourDetails,
-        rating: req.body.rating,
-        feature: req.body.feature,
-        category: req.body.category,
-        startdt: req.body.startdt,
-        enddt: req.body.enddt
+        tour_id: req.body.tour_id
     });
-    newTour.save(function (err, result) {
+    favTour.save(function (err, result) {
         if (err) {
             console.log(err);
             res.send(err);
         }
         else {
-            res.send("Tour added  created" + result);
+            res.send("favTour added added  created" + result);
         }
     });
 };
-exports.setTourdetails = setTourdetails;
-const deletetour = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.setfavTourdetails = setfavTourdetails;
+const deletefavTour = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.body._id;
-    const tour = yield tourModel_1.default.find({ "_id": ObjectId(id) });
+    const favTour = yield favtourModel_1.default.find({ "_id": ObjectId(id) });
     try {
-        if (tour != null) {
-            res.status(200).json(yield tourModel_1.default.deleteOne({ _id: req.body._id }));
+        if (favTour != null) {
+            res.status(200).json(yield favtourModel_1.default.deleteOne({ _id: req.body._id }));
         }
     }
     catch (err) {
         res.status(200).json(req.body._id + " is not found");
     }
 });
-exports.deletetour = deletetour;
-const updateTour = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.deletefavTour = deletefavTour;
+const updatefavTour = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.body._id;
     try {
-        yield tourModel_1.default.findByIdAndUpdate(id, req.body);
+        yield favtourModel_1.default.findByIdAndUpdate(id, req.body);
         res.send(req.body);
     }
     catch (err) {
         res.send(err);
     }
 });
-exports.updateTour = updateTour;
+exports.updatefavTour = updatefavTour;

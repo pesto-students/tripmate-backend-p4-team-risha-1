@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.photoUrl = exports.bucket = exports.blogRef = void 0;
 const credentials = {
     type: "service_account",
     project_id: "uploadphotos-4ccff",
@@ -14,3 +15,20 @@ const credentials = {
     // add ur config
 };
 exports.default = credentials;
+const storage_1 = require("firebase-admin/storage");
+const firestore_1 = require("firebase-admin/firestore");
+const app_1 = require("firebase-admin/app");
+var serviceAccount = require("../credfb.json");
+const { Storage } = require("@google-cloud/storage");
+const functions = require("firebase-functions");
+(0, app_1.initializeApp)({
+    credential: (0, app_1.cert)(serviceAccount),
+    storageBucket: "gs://uploadphotos-4ccff.appspot.com"
+});
+exports.blogRef = (0, firestore_1.getFirestore)().collection("blogref");
+exports.blogRef.doc().id;
+const storage = new Storage({
+    keyFilename: "./credfb.json",
+});
+exports.bucket = (0, storage_1.getStorage)().bucket();
+exports.photoUrl = "https://firebasestorage.googleapis.com/v0/b/uploadphotos-4ccff.appspot.com/o/";

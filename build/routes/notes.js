@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const tour_1 = require("../controllers/tour");
+const note_1 = require("../controllers/note");
 const router = express_1.default.Router();
-router.get("/", tour_1.gettourdetails);
-router.post("/", tour_1.setTourdetails);
-router.put("/", tour_1.deletetour);
-router.put("/update", tour_1.updateTour);
+router.get("/", note_1.getnotesdetails);
+router.post("/", note_1.setnotesdetails);
+router.put("/", note_1.deletenotes);
+router.put("/update", note_1.updatenotes);
 exports.default = router;

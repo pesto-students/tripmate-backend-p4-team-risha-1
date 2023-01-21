@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = exports.getUserProfile = exports.authUser = exports.getUsers = void 0;
+exports.updatecms = exports.deleteuser = exports.createUser = exports.getUserProfile = exports.authUser = exports.getUsers = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
+const ObjectId = require('mongodb').ObjectID;
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //res.status(200).json(users);
     const users = yield userModel_1.default.find({});
@@ -108,3 +109,27 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // });
 });
 exports.createUser = createUser;
+const deleteuser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.body._id;
+    const cms = yield userModel_1.default.find({ "_id": ObjectId(id) });
+    try {
+        if (cms != null) {
+            res.status(200).json(yield userModel_1.default.deleteOne({ _id: req.body._id }));
+        }
+    }
+    catch (err) {
+        res.status(200).json(req.body._id + " is not found");
+    }
+});
+exports.deleteuser = deleteuser;
+const updatecms = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.body._id;
+    try {
+        yield userModel_1.default.findByIdAndUpdate(id, req.body);
+        res.send(req.body);
+    }
+    catch (err) {
+        res.send(err);
+    }
+});
+exports.updatecms = updatecms;

@@ -9,9 +9,8 @@ const ObjectId = require("mongodb").ObjectID;
 
 import credentials from "../credentials";
 require("dotenv").config();
-=======
-const ObjectId  = require('mongodb').ObjectID;
-import {bucket,blogRef} from "../credentials";
+
+import { bucket, blogRef } from "../credentials";
 
 import Blog from "../models/blogModel";
 
@@ -21,7 +20,6 @@ const app = expressfb();
 app.use(expressfb.json({ limit: "50mb", extended: true }));
 app.use(expressfb.urlencoded({ extended: false, limit: "50mb" }));
 
-
 var admin = require("firebase-admin");
 
 const photoUrl =
@@ -29,20 +27,14 @@ const photoUrl =
 
 var serviceAccount = credentials;
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-
-const photoUrl = "https://firebasestorage.googleapis.com/v0/b/uploadphotos-4ccff.appspot.com/o/";
-
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 //storage.bucket("gs://uploadphotos-4ccff.appspot.com");
 
 interface Blog1 {
   photoUrl: any;
 }
-
-
 
 export const getblogs = async (req: Request, res: Response) => {
   const blogs = await Blog.find({});
@@ -154,9 +146,9 @@ export const updateImage = (req: Request, res: Response) => {
     form.parse(req, async (err: any, fields: any, files: any) => {
       let downLoadPath = "";
       const profileImage = files.profileImage;
-      let blog = new Blog  ({
+      let blog = new Blog({
         photoUrl: "",
-        photoName:"",
+        photoName: "",
         postContent: fields.postContent,
         tags: fields.tags,
         author: fields.author,

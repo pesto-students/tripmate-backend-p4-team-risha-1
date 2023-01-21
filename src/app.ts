@@ -28,15 +28,13 @@ app.use(cors());
 
 app.use("/users", userRouter);
 
-app.use("/users", userRouter);
 app.use("/tours", tourRouter);
-app.use("/blog",blogRouter);
-app.use("/notes",notesRoter);
-app.use("/favTour",favTour);
-app.use("/cms",cms);
-app.use("/explore",explore);
-app.use("/testimonial",testimonial);
-
+app.use("/blog", blogRouter);
+app.use("/notes", notesRoter);
+app.use("/favTour", favTour);
+app.use("/cms", cms);
+app.use("/explore", explore);
+app.use("/testimonial", testimonial);
 
 app.use(notFound);
 
