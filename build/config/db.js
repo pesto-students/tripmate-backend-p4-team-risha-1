@@ -39,8 +39,9 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const conn = yield mongoose_1.default.connect(process.env.DATABASE_URL, {
+        const conn = yield mongoose_1.default.connect((_a = process.env.DATABASE_URL) !== null && _a !== void 0 ? _a : "url", {
             useUnifiedTopology: true,
             useNewUrlParser: true,
         });

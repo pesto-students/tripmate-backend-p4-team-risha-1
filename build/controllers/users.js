@@ -12,42 +12,99 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = exports.getUsers = void 0;
+exports.createUser = exports.getUserProfile = exports.authUser = exports.getUsers = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const userModel_1 = __importDefault(require("../models/userModel"));
-let users = [];
+const generateToken_1 = __importDefault(require("../utils/generateToken"));
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //res.status(200).json(users);
     const users = yield userModel_1.default.find({});
     res.status(200).json(users);
 });
 exports.getUsers = getUsers;
-function hashPassword(plain) {
+const authUser = function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const hash = yield bcrypt_1.default.hash(plain, 10);
-        return hash;
-    });
-}
-const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const saltRound = 10;
-    const password = req.body.password;
-    console.log(password);
-    // let encryptedUser = hashPassword(password);
-    let newUser = new userModel_1.default({
-        username: req.body.username,
-        email: req.body.email,
-        password: bcrypt_1.default.hashSync(password, 10),
-        name: req.body.name,
-        isAdmin: false,
-    });
-    newUser.save(function (err, result) {
-        if (err) {
-            console.log(err);
-            res.send(err);
+        const { email, password } = req.body;
+        const user = yield userModel_1.default.findOne({ email });
+        if (!user) {
+            res.status(404);
+            res.send("User not found");
+            return;
+        }
+        const verify = yield bcrypt_1.default.compare(password, user.password);
+        if (verify) {
+            res.json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                isAdmin: user.isAdmin,
+                token: (0, generateToken_1.default)(user._id.toString()),
+            });
         }
         else {
-            res.send("user created" + result);
+            res.status(403);
+            res.send("Invalid email or password");
         }
     });
+};
+exports.authUser = authUser;
+const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield userModel_1.default.findById(req.user._id);
+    if (user) {
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+        });
+    }
+    else {
+        res.status(404);
+        throw new Error("User not found");
+    }
+});
+exports.getUserProfile = getUserProfile;
+const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password, username, name } = req.body;
+    const userExist = yield userModel_1.default.findOne({ email });
+    const saltRound = 10;
+    //const password: string = req.body.password;
+    if (userExist) {
+        res.status(400);
+        throw new Error("User already exists");
+    }
+    const user = yield userModel_1.default.create({
+        name,
+        email,
+        username,
+        password: bcrypt_1.default.hashSync(password, 10),
+    });
+    if (user) {
+        res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            isAdmin: user.isAdmin,
+            token: (0, generateToken_1.default)(user._id.toString()),
+        });
+    }
+    else {
+        res.status(400);
+        throw new Error("invalid data");
+    }
+    // let newUser = new User({
+    //   username: req.body.username,
+    //   email: req.body.email,
+    //   password: bcrypt.hashSync(password, 10),
+    //   name: req.body.name,
+    //   isAdmin: false,
+    // });
+    // newUser.save(function (err, result) {
+    //   if (err) {
+    //     console.log(err);
+    //     res.send(err);
+    //   } else {
+    //     res.send("user created" + result);
+    //   }
+    // });
 });
 exports.createUser = createUser;

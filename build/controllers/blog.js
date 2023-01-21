@@ -12,16 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createblog = exports.getblogs = void 0;
+exports.deleteblogs = exports.createblog = exports.getblogs = void 0;
 const express_1 = __importDefault(require("express"));
-const uuid_1 = require("uuid");
 const UUID = require("uuid-v4");
 const expressfb = require("express");
 const functions = require("firebase-functions");
 const { Storage } = require("@google-cloud/storage");
 const formidable = require("formidable-serverless");
+const ObjectId = require("mongodb").ObjectID;
 const credentials_1 = __importDefault(require("../credentials"));
 require("dotenv").config();
+const blogModel_1 = __importDefault(require("../models/blogModel"));
 const router = express_1.default.Router();
 //const credentials = require("../../credfb.json");
 const app = expressfb();
@@ -39,43 +40,28 @@ const storage = new Storage({
     //keyFilename: "../credentials",
 });
 const bucket = storage.bucket("gs://uploadphotos-4ccff.appspot.com");
-let blogs = [];
-const getblogs = (req, res) => {
+//let blogs: any = [];
+const getblogs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const blogs = yield blogModel_1.default.find({});
     res.status(200).json(blogs);
-};
-exports.getblogs = getblogs;
-router.post("/addPost", (req, res) => {
-    let newblog1 = {
-        id: (0, uuid_1.v4)().toString(),
-        postContent: req.body.postContent,
-        tags: req.body.tags,
-        author: req.body.author,
-        catagory: req.body.catagory,
-        photoUrl: "",
-        date: req.body.date,
-    };
-    blogs.push(newblog1);
-    res.send("blog added");
 });
+exports.getblogs = getblogs;
 const createblog = (req, res) => {
-    console.log("in post1");
     const form = new formidable.IncomingForm({ multiples: true });
     try {
         form.parse(req, (err, fields, files) => __awaiter(void 0, void 0, void 0, function* () {
             let uuid = UUID();
             let downLoadPath = "";
             const profileImage = files.profileImage;
-            let newblog1 = {
-                id: (0, uuid_1.v4)().toString(),
+            let blog = new blogModel_1.default({
+                photoUrl: "",
+                photoName: "",
                 postContent: fields.postContent,
                 tags: fields.tags,
                 author: fields.author,
                 catagory: fields.catagory,
-                photoUrl: "",
                 date: fields.date,
-            };
-            console.log(fields);
-            // url of the uploaded image
+            });
             let imageUrl;
             const docID = blogRef.doc().id;
             if (err) {
@@ -94,7 +80,7 @@ const createblog = (req, res) => {
                     resumable: true,
                     metadata: {
                         metadata: {
-                            firebaseStorageDownloadTokens: newblog1.id,
+                            firebaseStorageDownloadTokens: blog.id,
                         },
                     },
                 });
@@ -103,13 +89,14 @@ const createblog = (req, res) => {
                     downLoadPath +
                         encodeURIComponent(imageResponse[0].name) +
                         "?alt=media&token=" +
-                        newblog1.id;
+                        blog.id;
             }
             let newblog = {
                 photoUrl: profileImage.size == 0 ? "" : imageUrl,
             };
-            newblog1.photoUrl = photoUrl + newblog.photoUrl;
-            uploadOnfireStore(blogRef, docID, newblog, res, newblog1);
+            blog.photoUrl = photoUrl + newblog.photoUrl;
+            blog.photoName = profileImage.name;
+            uploadOnfireStore(blogRef, docID, newblog, res, blog);
         }));
     }
     catch (err) {
@@ -121,35 +108,41 @@ const createblog = (req, res) => {
     }
 };
 exports.createblog = createblog;
-function uploadOnfireStore(blogRef, docID, newblog, res, newblog1) {
+function uploadOnfireStore(blogRef, docID, newblog, res, blog) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("in uploadimage function");
         yield blogRef
             .doc(docID)
             .set(newblog, { merge: true })
             .then((value) => {
-            blogs.push(newblog1);
-            // return response to users
+            blog.save();
             res.status(200).send({
-                message: "user created successfully",
-                data: newblog1,
+                message: "blog created successfully",
+                data: blog,
                 error: {},
             });
         });
     });
 }
-router.put("/deletePost", (req, res) => {
-    var blogId;
-    for (let blog of blogs) {
-        var id = req.body.id;
-        if (blog._id == id) {
-            blogId = blog.id;
-            console.log(blogId);
+const deleteblogs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("delet blogs");
+    const id = req.body._id;
+    const blog = yield blogModel_1.default.find({ _id: ObjectId(id) });
+    try {
+        if (blog != null) {
+            console.log(blog);
+            try {
+                const file = bucket.file("blogs/" + blog[0].photoName);
+                file.delete();
+            }
+            catch (err) {
+                res.status(200).json(blog[0].photoName + "photo not found");
+            }
+            res.status(200).json(yield blogModel_1.default.deleteOne({ _id: req.body._id }));
         }
     }
-    if (blogId !== -1) {
-        blogs.splice(blogId, 1);
+    catch (err) {
+        res.status(200).json(req.body._id + " is not found");
     }
-    res.send(blogs);
 });
+exports.deleteblogs = deleteblogs;
 exports.default = router;

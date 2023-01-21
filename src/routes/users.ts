@@ -1,7 +1,13 @@
 import express, { Router, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { getUsers, createUser } from "../controllers/users";
+import {
+  getUsers,
+  createUser,
+  authUser,
+  getUserProfile,
+} from "../controllers/users";
 import asyncHandler from "express-async-handler";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router: Router = express.Router();
 
@@ -10,6 +16,9 @@ let password: (x: string) => string = function (x) {
 };
 
 let users: any = [];
+
+router.route("/login").post(authUser);
+router.route("/profile").post(protect, getUserProfile);
 
 router.get("/", asyncHandler(getUsers));
 

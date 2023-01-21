@@ -28,24 +28,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const users_1 = __importDefault(require("./routes/users"));
+const tour_1 = __importDefault(require("./routes/tour"));
 const dotenv = __importStar(require("dotenv"));
-<<<<<<< HEAD
+const errorMiddleware_js_1 = require("./middleware/errorMiddleware.js");
+const cors_1 = __importDefault(require("cors"));
 const blog_1 = __importDefault(require("./routes/blog"));
-=======
 const db_1 = __importDefault(require("./config/db"));
->>>>>>> 8caa0ef8b4e454de31bc5c4b0674d0a12a22da26
 dotenv.config();
 (0, db_1.default)();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT;
+app.use(express_1.default.json());
+// app.use("auth");
+app.use((0, cors_1.default)());
+//
+app.use("/users", users_1.default);
+app.use(errorMiddleware_js_1.notFound);
+app.use(errorMiddleware_js_1.errorHandler);
+app.use("/tours", tour_1.default);
+app.use("/blog", blog_1.default);
 app.get("/", (req, res) => {
     res.send("hello world");
 });
-app.use(express_1.default.json());
-// app.use("auth");
-//
-app.use("/users", users_1.default);
-app.use("/blog", blog_1.default);
 app.listen(PORT, () => {
     console.log(`Hola Server is running on port ${PORT}`);
 });
