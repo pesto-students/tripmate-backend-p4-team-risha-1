@@ -69,22 +69,42 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const userExist = yield userModel_1.default.findOne({ email });
     const saltRound = 10;
     //const password: string = req.body.password;
-    console.log(password);
-    let newUser = new userModel_1.default({
-        username: req.body.username,
-        email: req.body.email,
+    if (userExist) {
+        res.status(400);
+        throw new Error("User already exists");
+    }
+    const user = yield userModel_1.default.create({
+        name,
+        email,
+        username,
         password: bcrypt_1.default.hashSync(password, 10),
-        name: req.body.name,
-        isAdmin: false,
     });
-    newUser.save(function (err, result) {
-        if (err) {
-            console.log(err);
-            res.send(err);
-        }
-        else {
-            res.send("user created" + result);
-        }
-    });
+    if (user) {
+        res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            isAdmin: user.isAdmin,
+            token: (0, generateToken_1.default)(user._id.toString()),
+        });
+    }
+    else {
+        res.status(400);
+        throw new Error("invalid data");
+    }
+    // let newUser = new User({
+    //   username: req.body.username,
+    //   email: req.body.email,
+    //   password: bcrypt.hashSync(password, 10),
+    //   name: req.body.name,
+    //   isAdmin: false,
+    // });
+    // newUser.save(function (err, result) {
+    //   if (err) {
+    //     console.log(err);
+    //     res.send(err);
+    //   } else {
+    //     res.send("user created" + result);
+    //   }
+    // });
 });
 exports.createUser = createUser;

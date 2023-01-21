@@ -64,21 +64,43 @@ export const createUser = async (req: Request, res: Response) => {
 
   const saltRound = 10;
   //const password: string = req.body.password;
-  console.log(password);
-  let newUser = new User({
-    username: req.body.username,
-    email: req.body.email,
-    password: bcrypt.hashSync(password, 10),
-    name: req.body.name,
-    isAdmin: false,
-  });
+  if (userExist) {
+    res.status(400);
+    throw new Error("User already exists");
+  }
 
-  newUser.save(function (err, result) {
-    if (err) {
-      console.log(err);
-      res.send(err);
-    } else {
-      res.send("user created" + result);
-    }
+  const user = await User.create({
+    name,
+    email,
+    username,
+    password: bcrypt.hashSync(password, 10),
   });
+  if (user) {
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      isAdmin: user.isAdmin,
+      token: generateToken(user._id.toString()),
+    });
+  } else {
+    res.status(400);
+    throw new Error("invalid data");
+  }
+
+  // let newUser = new User({
+  //   username: req.body.username,
+  //   email: req.body.email,
+  //   password: bcrypt.hashSync(password, 10),
+  //   name: req.body.name,
+  //   isAdmin: false,
+  // });
+
+  // newUser.save(function (err, result) {
+  //   if (err) {
+  //     console.log(err);
+  //     res.send(err);
+  //   } else {
+  //     res.send("user created" + result);
+  //   }
+  // });
 };
