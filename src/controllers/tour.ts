@@ -3,8 +3,7 @@ import { Application, Request, Response } from "express";
 import Tour from "../models/tourModel";
 const ObjectId  = require('mongodb').ObjectID;
 
- 
-  let tours: any = [];
+
   export const gettourdetails = async(req: Request, res: Response) => {
     const tour = await Tour.find({});
     res.status(200).json(tour);
@@ -41,4 +40,16 @@ const ObjectId  = require('mongodb').ObjectID;
   }catch(err){
     res.status(200).json( req.body._id+" is not found")
   }
+};
+
+
+export const updateTour =async (req: Request, res: Response) => {
+  const id   = req.body._id; 
+  try{
+    await Tour.findByIdAndUpdate(id,req.body);
+    res.send(req.body);
+  }catch(err){
+    res.send(err); 
+  }
+ 
 };

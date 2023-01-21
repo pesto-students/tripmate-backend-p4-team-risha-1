@@ -37,3 +37,14 @@ const ObjectId  = require('mongodb').ObjectID;
     res.status(200).json( req.body._id+" is not found")
   }
 };
+
+export const updatecms =async (req: Request, res: Response) => {
+  const id   = req.body._id; 
+  try{
+    await CMS.findByIdAndUpdate(id,req.body);
+    res.send(req.body);
+  }catch(err){
+    res.send(err); 
+  }
+ 
+};

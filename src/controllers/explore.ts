@@ -16,6 +16,11 @@ interface Blog1 {
 }
 
 
+export const updateexploredetails =async (req: Request, res: Response) => {
+    const explore = await Explore.findByIdAndUpdate({});
+    res.status(200).json(explore);
+  };
+  
 
 export const getexploredetails =async (req: Request, res: Response) => {
   const explore = await Explore.find({});
