@@ -5,6 +5,7 @@ import notesRoter from "./routes/notes";
 import favTour from "./routes/favTour";
 import cms from "./routes/cms";
 import explore from "./routes/explore";
+import testimonial from "./routes/testimonial";
 import * as dotenv from "dotenv";
 import mongoose from "mongoose";
 
@@ -33,6 +34,7 @@ app.use("/notes",notesRoter);
 app.use("/favTour",favTour);
 app.use("/cms",cms);
 app.use("/explore",explore);
+app.use("/testimonial",testimonial);
 
 
 app.listen(PORT, () => {
