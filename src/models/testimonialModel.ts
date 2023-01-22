@@ -1,16 +1,14 @@
 import { Schema, model } from "mongoose";
-const testimonialSchema = new Schema(
-    {  
-    userName: {
-            type: String,
-            required: true,
-        },
-        content: {
-            type: String,
-            required: true,
-        }
-    }
-);
+const testimonialSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+});
 
 const TESTIMONIAL = model("TESTIMONIAL", testimonialSchema);
 

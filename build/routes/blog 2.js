@@ -8,5 +8,5 @@ const blog_1 = require("../controllers/blog");
 const router = express_1.default.Router();
 router.get("/", blog_1.getblogs);
 router.post("/", blog_1.createblog);
-router.delete("/", blog_1.deleteblogs);
+router.put("/", blog_1.deleteblogs);
 exports.default = router;

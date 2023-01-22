@@ -10,6 +10,10 @@ const blogSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    postTitle: {
+        type: String,
+        required: true,
+    },
     postContent: {
         type: String,
         required: true,
@@ -22,14 +26,14 @@ const blogSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    catagory: {
+    category: {
         type: String,
         required: true,
     },
     date: {
-        type: String,
-        required: true,
-    }
-});
+        type: Date,
+        default: Date.now(),
+    },
+}, { timestamps: true });
 const Blog = (0, mongoose_1.model)("Blog", blogSchema);
 exports.default = Blog;

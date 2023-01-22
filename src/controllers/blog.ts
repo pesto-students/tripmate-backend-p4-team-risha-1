@@ -40,6 +40,8 @@ export const getblogs = async (req: Request, res: Response) => {
   const blogs = await Blog.find({});
   res.status(200).json(blogs);
 };
+// @desc Add New Post
+// @Route /blog
 
 export const createblog = (req: Request, res: Response) => {
   const form = new formidable.IncomingForm({ multiples: true });
@@ -50,13 +52,13 @@ export const createblog = (req: Request, res: Response) => {
       let blog = new Blog({
         photoUrl: "",
         photoName: "",
+        postTitle: fields.postTitle,
         postContent: fields.postContent,
         tags: fields.tags,
         author: fields.author,
-        catagory: fields.catagory,
-        date: fields.date,
+        category: fields.category,
       });
-      let imageUrl;
+      let imageUrl: string;
       const docID = blogRef.doc().id;
       if (err) {
         return res.status(400).json({
@@ -121,7 +123,7 @@ async function uploadOnfireStore(
 }
 
 export const deleteblogs = async (req: Request, res: Response) => {
-  console.log("delet blogs");
+  console.log("delete blogs");
   const id = req.body._id;
   const blog = await Blog.find({ _id: ObjectId(id) });
   try {
