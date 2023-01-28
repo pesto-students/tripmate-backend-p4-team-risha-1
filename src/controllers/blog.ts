@@ -25,10 +25,6 @@ const photoUrl = "https://firebasestorage.googleapis.com/v0/b/uploadphotos-4ccff
 
 var serviceAccount = credentials;
 
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
-//storage.bucket("gs://uploadphotos-4ccff.appspot.com");
 
 interface Blog1 {
   photoUrl: any;
@@ -119,7 +115,8 @@ async function uploadOnfireStore(
 
 export const deleteblogs = async (req: Request, res: Response) => {
   const id = req.body._id;
-  const blog = findBlogData(id);
+  const blog = await Blog.find({ _id: ObjectId(id) });
+  console.log(blog);
   try {
     if (blog != null) {
       try {
@@ -154,9 +151,7 @@ console.log("in find",_id);
 
 export const updateImageinBlog =async function updateImage(profileImage:any,id:any,photoName:any) {
   console.log("in blog updating image",id);
-  const blog = findBlogData(id);
-  console.log(blog);
-  //deleteimage(photoName);
+  const blog = await Blog.find({ _id: ObjectId(id) });
   try{
   console.log("in side try");
     const imageResponse = await bucket.upload(profileImage.path, {
@@ -170,8 +165,10 @@ export const updateImageinBlog =async function updateImage(profileImage:any,id:a
     });
     const imageUrl = encodeURIComponent(imageResponse[0].name) +
       "?alt=media&token=" +blog[0]._id;
-      console.log(imageUrl);
-      return imageUrl;
+      blog[0].photoUrl = photoUrl+imageUrl;
+      blog[0].photoName = photoName;
+      blog[0].save();
+      return blog;
   }catch(err){
     return err;
   }

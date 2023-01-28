@@ -21,7 +21,7 @@ export const updateImage =(req:Request, res: Response) =>{
             let photoName = fields.photoName;
 
             switch(content){
-               case "Blog" : return updateImageinBlog(profileImage,_id,photoName);
+               case "Blog" : return res.send(updateImageinBlog(profileImage,_id,photoName));
                             break;
             }
             

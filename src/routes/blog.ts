@@ -4,6 +4,6 @@ const router: Router = express.Router();
 
 router.get("/", getblogs);
 router.post("/", createblog);
-router.delete("/", deleteblogs);
+router.put("/", deleteblogs);
 
 export default router;
