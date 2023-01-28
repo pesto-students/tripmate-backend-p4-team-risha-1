@@ -10,9 +10,10 @@ import * as dotenv from "dotenv";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import cors from "cors";
 import blogRouter from "./routes/blog";
-
+import updateImageRoute from "./routes/updateImage";
 import connectDB from "./config/db";
 import colors from "colors";
+import { updateImage } from "./controllers/updateImage";
 
 dotenv.config();
 connectDB();
@@ -35,6 +36,7 @@ app.use("/favTour", favTour);
 app.use("/cms", cms);
 app.use("/explore", explore);
 app.use("/testimonial", testimonial);
+app.use("/update_image", updateImageRoute);
 
 app.use(notFound);
 

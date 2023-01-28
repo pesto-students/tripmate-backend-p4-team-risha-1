@@ -8,7 +8,6 @@ const formidable = require("formidable-serverless");
 const ObjectId = require("mongodb").ObjectID;
 
 import credentials from "../credentials";
-require("dotenv").config();
 
 import { bucket, blogRef } from "../credentials";
 
@@ -22,8 +21,7 @@ app.use(expressfb.urlencoded({ extended: false, limit: "50mb" }));
 
 var admin = require("firebase-admin");
 
-const photoUrl =
-  "https://firebasestorage.googleapis.com/v0/b/uploadphotos-4ccff.appspot.com/o/";
+const photoUrl = "https://firebasestorage.googleapis.com/v0/b/uploadphotos-4ccff.appspot.com/o/";
 
 var serviceAccount = credentials;
 
@@ -47,7 +45,6 @@ export const createblog = (req: Request, res: Response) => {
   const form = new formidable.IncomingForm({ multiples: true });
   try {
     form.parse(req, async (err: any, fields: any, files: any) => {
-      let downLoadPath = "";
       const profileImage = files.profileImage;
       let blog = new Blog({
         photoUrl: "",
@@ -58,7 +55,7 @@ export const createblog = (req: Request, res: Response) => {
         author: fields.author,
         category: fields.category,
       });
-      let imageUrl: string;
+      let imageUrl: string="";
       const docID = blogRef.doc().id;
       if (err) {
         return res.status(400).json({
@@ -80,9 +77,7 @@ export const createblog = (req: Request, res: Response) => {
           },
         });
         // profile image url
-        imageUrl =
-          downLoadPath +
-          encodeURIComponent(imageResponse[0].name) +
+        imageUrl = ""+encodeURIComponent(imageResponse[0].name) +
           "?alt=media&token=" +
           blog.id;
       }
@@ -123,15 +118,12 @@ async function uploadOnfireStore(
 }
 
 export const deleteblogs = async (req: Request, res: Response) => {
-  console.log("delete blogs");
   const id = req.body._id;
-  const blog = await Blog.find({ _id: ObjectId(id) });
+  const blog = findBlogData(id);
   try {
     if (blog != null) {
-      console.log(blog);
       try {
-        const file = bucket.file("blogs/" + blog[0].photoName);
-        file.delete();
+        deleteimage(blog[0].photoName);
       } catch (err) {
         res.status(200).json(blog[0].photoName + "photo not found");
       }
@@ -142,63 +134,47 @@ export const deleteblogs = async (req: Request, res: Response) => {
   }
 };
 
-export const updateImage = (req: Request, res: Response) => {
-  const form = new formidable.IncomingForm({ multiples: true });
-  try {
-    form.parse(req, async (err: any, fields: any, files: any) => {
-      let downLoadPath = "";
-      const profileImage = files.profileImage;
-      let blog = new Blog({
-        photoUrl: "",
-        photoName: "",
-        postContent: fields.postContent,
-        tags: fields.tags,
-        author: fields.author,
-        catagory: fields.catagory,
-        date: fields.date,
-      });
-      let imageUrl;
-      const docID = blogRef.doc().id;
-      if (err) {
-        return res.status(400).json({
-          message: "There was an error parsing the files",
-          data: {},
-          error: err,
-        });
-      }
-      if (profileImage.size == 0) {
-        // do nothing
-      } else {
-        const imageResponse = await bucket.upload(profileImage.path, {
-          destination: `blogs/${profileImage.name}`,
-          resumable: true,
-          metadata: {
-            metadata: {
-              firebaseStorageDownloadTokens: blog.id,
-            },
-          },
-        });
-        // profile image url
-        imageUrl =
-          downLoadPath +
-          encodeURIComponent(imageResponse[0].name) +
-          "?alt=media&token=" +
-          blog.id;
-      }
-      let newblog: Blog1 = {
-        photoUrl: profileImage.size == 0 ? "" : imageUrl,
-      };
-      blog.photoUrl = photoUrl + newblog.photoUrl;
-      blog.photoName = profileImage.name;
-      uploadOnfireStore(blogRef, docID, newblog, res, blog);
-    });
-  } catch (err) {
-    res.send({
-      message: "Something went wrong",
-      data: {},
-      error: err,
-    });
-  }
-};
 
+
+function deleteimage(photoName){
+  try {
+    const file = bucket.file("blogs/" + photoName);
+    file.delete();
+  } catch (err) {
+    return err;
+  }
+}
+
+async function findBlogData(_id:any){
+console.log("in find",_id);
+  const id = _id;
+  const blog = await Blog.find({ _id: ObjectId(id) });
+  return blog;
+}
+
+export const updateImageinBlog =async function updateImage(profileImage:any,id:any,photoName:any) {
+  console.log("in blog updating image",id);
+  const blog = findBlogData(id);
+  console.log(blog);
+  //deleteimage(photoName);
+  try{
+  console.log("in side try");
+    const imageResponse = await bucket.upload(profileImage.path, {
+      destination: `blogs/${profileImage.name}`,
+      resumable: true,
+      metadata: {
+        metadata: {
+          firebaseStorageDownloadTokens: blog[0]._id,
+        },
+      },
+    });
+    const imageUrl = encodeURIComponent(imageResponse[0].name) +
+      "?alt=media&token=" +blog[0]._id;
+      console.log(imageUrl);
+      return imageUrl;
+  }catch(err){
+    return err;
+  }
+
+}
 export default router;

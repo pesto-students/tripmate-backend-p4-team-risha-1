@@ -122,4 +122,15 @@ export const delete_explore =async (req: Request, res: Response) => {
   
  
 };
+
+export const update_explore = async(req:Request,res:Response)=>{
+  const id   = req.body._id; 
+  try{
+    await Explore.findByIdAndUpdate(id,req.body);
+    res.send(req.body);
+  }catch(err){
+    res.send(err); 
+  }
+}
+
 export default router;
