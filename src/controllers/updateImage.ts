@@ -8,8 +8,8 @@ const functions = require("firebase-functions");
 const { Storage } = require("@google-cloud/storage");
 const formidable = require("formidable-serverless");
 const ObjectId = require("mongodb").ObjectID;
-import { bucket, blogRef } from "../credentials";
 import { updateImageinBlog } from "../controllers/blog";
+import { updateImageinExplore } from "../controllers/explore";
 
 export const updateImage =(req:Request, res: Response) =>{
     const form = new formidable.IncomingForm({ multiples: true });
@@ -22,7 +22,9 @@ export const updateImage =(req:Request, res: Response) =>{
 
             switch(content){
                case "Blog" : return res.send(updateImageinBlog(profileImage,_id,photoName));
-                            break;
+                                break;
+                case "Explore" : return res.send(updateImageinExplore(profileImage,_id,photoName));
+                                break;                       
             }
             
         });

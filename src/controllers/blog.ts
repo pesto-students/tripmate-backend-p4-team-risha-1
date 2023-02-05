@@ -143,7 +143,6 @@ function deleteimage(photoName){
 }
 
 async function findBlogData(_id:any){
-console.log("in find",_id);
   const id = _id;
   const blog = await Blog.find({ _id: ObjectId(id) });
   return blog;
@@ -174,4 +173,14 @@ export const updateImageinBlog =async function updateImage(profileImage:any,id:a
   }
 
 }
+export const update_blog = async(req:Request,res:Response)=>{
+  const id   = req.body._id; 
+  try{
+    await Blog.findByIdAndUpdate(id,req.body);
+    res.send(req.body);
+  }catch(err){
+    res.send(err); 
+  }
+}
+
 export default router;
