@@ -24,7 +24,8 @@ export const updateImage =(req:Request, res: Response) =>{
                case "Blog" : return res.send(updateImageinBlog(profileImage,_id,photoName));
                                 break;
                 case "Explore" : return res.send(updateImageinExplore(profileImage,_id,photoName));
-                                break;                       
+                                break; 
+                 default:   return;                                     
             }
             
         });
