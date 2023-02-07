@@ -13,6 +13,7 @@ import blogRouter from "./routes/blog";
 
 import connectDB from "./config/db";
 import colors from "colors";
+import fetchPlace from "./routes/google_api";
 
 dotenv.config();
 connectDB();
@@ -35,6 +36,7 @@ app.use("/favTour", favTour);
 app.use("/cms", cms);
 app.use("/explore", explore);
 app.use("/testimonial", testimonial);
+app.use("/fetchPlaces",fetchPlace)
 
 app.use(notFound);
 
