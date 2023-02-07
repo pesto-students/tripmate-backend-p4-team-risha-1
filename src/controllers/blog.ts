@@ -51,7 +51,7 @@ export const createblog = (req: Request, res: Response) => {
         author: fields.author,
         category: fields.category,
       });
-      let imageUrl: string="";
+      let imageUrl;
       const docID = blogRef.doc().id;
       if (err) {
         return res.status(400).json({

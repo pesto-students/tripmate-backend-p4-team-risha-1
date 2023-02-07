@@ -14,6 +14,7 @@ import updateImageRoute from "./routes/updateImage";
 import connectDB from "./config/db";
 import colors from "colors";
 import { updateImage } from "./controllers/updateImage";
+import fetchPlace from "./routes/google_api";
 
 dotenv.config();
 connectDB();
@@ -37,6 +38,7 @@ app.use("/cms", cms);
 app.use("/explore", explore);
 app.use("/testimonial", testimonial);
 app.use("/update_image", updateImageRoute);
+app.use("/fetchPlaces",fetchPlace)
 
 app.use(notFound);
 
