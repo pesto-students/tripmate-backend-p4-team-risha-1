@@ -37,7 +37,7 @@ export const setexploredetails = (req: Request, res: Response) => {
         title: fields.title,
         image_url:"",
         context: fields.postContent,
-        photoName :""
+        photoName :fields.photoName
       });
       let imageUrl;
       const docID = blogRef.doc().id;
@@ -95,7 +95,7 @@ async function uploadOnfireStore(
     .then((value: any) => {
     explore.save();
       res.status(200).send({
-        message: "blog created successfully",
+        message: "Explore data created successfully",
         data: explore,
         error: {},
       });
@@ -122,4 +122,39 @@ export const delete_explore =async (req: Request, res: Response) => {
   
  
 };
+
+export const update_explore = async(req:Request,res:Response)=>{
+  const id   = req.body._id; 
+  try{
+    await Explore.findByIdAndUpdate(id,req.body);
+    res.send(req.body);
+  }catch(err){
+    res.send(err); 
+  }
+}
+
+
+export const updateImageinExplore =async function updateImage(profileImage:any,id:any,photoName:any) {
+  const explore = await Explore.find({ _id: ObjectId(id) });
+  try{
+    const imageResponse = await bucket.upload(profileImage.path, {
+      destination: `blogs/${profileImage.name}`,
+      resumable: true,
+      metadata: {
+        metadata: {
+          firebaseStorageDownloadTokens: explore[0]._id,
+        },
+      },
+    });
+    const imageUrl = encodeURIComponent(imageResponse[0].name) +
+      "?alt=media&token=" +explore[0]._id;
+      explore[0].image_url = photoUrl+imageUrl;
+      explore[0].photoName = photoName;
+      explore[0].save();
+      return explore;
+  }catch(err){
+    return err;
+  }
+}
+
 export default router;
