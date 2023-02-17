@@ -36,7 +36,7 @@ export const setexploredetails = (req: Request, res: Response) => {
       let explore = new Explore  ({
         title: fields.title,
         image_url:"",
-        context: fields.postContent,
+        context: fields.context,
         photoName :fields.photoName
       });
       let imageUrl;
