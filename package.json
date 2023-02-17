@@ -5,7 +5,9 @@
   "main": "build/app.js",
   "type": "commonjs",
   "scripts": {
-    "devStart": "concurrently \"npx tsc -w\" \"nodemon ./build/app.js\""
+    "devStart": "concurrently \"npx tsc -w\" \"nodemon ./build/app.js\"",
+    "build": "npx tsc",
+    "start": "node ./build/app.js"
   },
   "repository": {
     "type": "git",
