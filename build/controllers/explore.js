@@ -41,7 +41,7 @@ const setexploredetails = (req, res) => {
             let explore = new exploreModel_1.default({
                 title: fields.title,
                 image_url: "",
-                context: fields.postContent,
+                context: fields.context,
                 photoName: fields.photoName
             });
             let imageUrl;
