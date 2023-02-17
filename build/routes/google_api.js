@@ -6,5 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const google_api_1 = require("../controllers/google_api");
 const router = express_1.default.Router();
-router.get("/", google_api_1.fetchPlaces);
+router.post("/", google_api_1.fetchPlaces);
 exports.default = router;
