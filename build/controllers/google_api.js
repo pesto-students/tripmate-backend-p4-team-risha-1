@@ -18,11 +18,13 @@ const fetchPlaces = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const location = req.body.location; //'16.6629739,74.2061816';
         const radius = req.body.radius; //'4000';
         const type = req.body.type; //'tourist_attraction';
-        const { data } = yield axios.get('https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAMK3vI-Vqdf6l-EwT7xTw3UF-3npnKBGY&location=' + location +
+        const response = yield axios.get('https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAMK3vI-Vqdf6l-EwT7xTw3UF-3npnKBGY&location=' + location +
             '&radius=' + radius + '&type=' + type);
-        res.status(200).json(data);
+        console.log(response);
+        res.status(200).json(response.data);
     }
     catch (err) {
+        console.log(err);
         res.send(err);
     }
 });
