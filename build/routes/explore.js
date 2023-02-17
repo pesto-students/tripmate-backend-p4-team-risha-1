@@ -9,4 +9,5 @@ const router = express_1.default.Router();
 router.get("/", explore_1.getexploredetails);
 router.post("/", explore_1.setexploredetails);
 router.put("/", explore_1.delete_explore);
+router.put("/update", explore_1.update_explore);
 exports.default = router;

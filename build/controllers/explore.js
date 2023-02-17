@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_explore = exports.setexploredetails = exports.getexploredetails = exports.updateexploredetails = void 0;
+exports.updateImageinExplore = exports.update_explore = exports.delete_explore = exports.setexploredetails = exports.getexploredetails = exports.updateexploredetails = void 0;
 const express_1 = __importDefault(require("express"));
 const formidable_serverless_1 = __importDefault(require("formidable-serverless"));
 const expressfb = require("express");
@@ -42,7 +42,7 @@ const setexploredetails = (req, res) => {
                 title: fields.title,
                 image_url: "",
                 context: fields.postContent,
-                photoName: ""
+                photoName: fields.photoName
             });
             let imageUrl;
             const docID = credentials_1.blogRef.doc().id;
@@ -97,7 +97,7 @@ function uploadOnfireStore(blogRef, docID, newblog, res, explore) {
             .then((value) => {
             explore.save();
             res.status(200).send({
-                message: "blog created successfully",
+                message: "Explore data created successfully",
                 data: explore,
                 error: {},
             });
@@ -125,4 +125,41 @@ const delete_explore = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.delete_explore = delete_explore;
+const update_explore = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.body._id;
+    try {
+        yield exploreModel_1.default.findByIdAndUpdate(id, req.body);
+        res.send(req.body);
+    }
+    catch (err) {
+        res.send(err);
+    }
+});
+exports.update_explore = update_explore;
+const updateImageinExplore = function updateImage(profileImage, id, photoName) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const explore = yield exploreModel_1.default.find({ _id: ObjectId(id) });
+        try {
+            const imageResponse = yield credentials_1.bucket.upload(profileImage.path, {
+                destination: `blogs/${profileImage.name}`,
+                resumable: true,
+                metadata: {
+                    metadata: {
+                        firebaseStorageDownloadTokens: explore[0]._id,
+                    },
+                },
+            });
+            const imageUrl = encodeURIComponent(imageResponse[0].name) +
+                "?alt=media&token=" + explore[0]._id;
+            explore[0].image_url = credentials_1.photoUrl + imageUrl;
+            explore[0].photoName = photoName;
+            explore[0].save();
+            return explore;
+        }
+        catch (err) {
+            return err;
+        }
+    });
+};
+exports.updateImageinExplore = updateImageinExplore;
 exports.default = router;

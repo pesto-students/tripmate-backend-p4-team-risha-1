@@ -41,10 +41,7 @@ dotenv.config();
 const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const conn = yield mongoose_1.default.connect((_a = process.env.DATABASE_URL) !== null && _a !== void 0 ? _a : "url", {
-            useUnifiedTopology: true,
-            useNewUrlParser: true,
-        });
+        const conn = yield mongoose_1.default.connect((_a = process.env.DATABASE_URL) !== null && _a !== void 0 ? _a : "url");
         console.log(`MonogDB Connected: ${conn.connection.host}`);
     }
     catch (err) {

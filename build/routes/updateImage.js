@@ -4,10 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const blog_1 = require("../controllers/blog");
+const updateImage_1 = require("../controllers/updateImage");
 const router = express_1.default.Router();
-router.get("/", blog_1.getblogs);
-router.post("/", blog_1.createblog);
-router.put("/", blog_1.deleteblogs);
-router.put("/update", blog_1.update_blog);
+router.put("/", updateImage_1.updateImage);
 exports.default = router;

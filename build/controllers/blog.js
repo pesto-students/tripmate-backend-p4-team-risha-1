@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateImage = exports.deleteblogs = exports.createblog = exports.getblogs = void 0;
+exports.update_blog = exports.updateImageinBlog = exports.deleteblogs = exports.createblog = exports.getblogs = void 0;
 const express_1 = __importDefault(require("express"));
 const expressfb = require("express");
 const functions = require("firebase-functions");
@@ -20,7 +20,6 @@ const { Storage } = require("@google-cloud/storage");
 const formidable = require("formidable-serverless");
 const ObjectId = require("mongodb").ObjectID;
 const credentials_1 = __importDefault(require("../credentials"));
-require("dotenv").config();
 const credentials_2 = require("../credentials");
 const blogModel_1 = __importDefault(require("../models/blogModel"));
 const router = express_1.default.Router();
@@ -41,7 +40,6 @@ const createblog = (req, res) => {
     const form = new formidable.IncomingForm({ multiples: true });
     try {
         form.parse(req, (err, fields, files) => __awaiter(void 0, void 0, void 0, function* () {
-            let downLoadPath = "";
             const profileImage = files.profileImage;
             let blog = new blogModel_1.default({
                 photoUrl: "",
@@ -75,11 +73,9 @@ const createblog = (req, res) => {
                     },
                 });
                 // profile image url
-                imageUrl =
-                    downLoadPath +
-                        encodeURIComponent(imageResponse[0].name) +
-                        "?alt=media&token=" +
-                        blog.id;
+                imageUrl = "" + encodeURIComponent(imageResponse[0].name) +
+                    "?alt=media&token=" +
+                    blog.id;
             }
             let newblog = {
                 photoUrl: profileImage.size == 0 ? "" : imageUrl,
@@ -114,15 +110,13 @@ function uploadOnfireStore(blogRef, docID, newblog, res, blog) {
     });
 }
 const deleteblogs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("delete blogs");
     const id = req.body._id;
     const blog = yield blogModel_1.default.find({ _id: ObjectId(id) });
+    console.log(blog);
     try {
         if (blog != null) {
-            console.log(blog);
             try {
-                const file = credentials_2.bucket.file("blogs/" + blog[0].photoName);
-                file.delete();
+                deleteimage(blog[0].photoName);
             }
             catch (err) {
                 res.status(200).json(blog[0].photoName + "photo not found");
@@ -135,65 +129,59 @@ const deleteblogs = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.deleteblogs = deleteblogs;
-const updateImage = (req, res) => {
-    const form = new formidable.IncomingForm({ multiples: true });
+function deleteimage(photoName) {
     try {
-        form.parse(req, (err, fields, files) => __awaiter(void 0, void 0, void 0, function* () {
-            let downLoadPath = "";
-            const profileImage = files.profileImage;
-            let blog = new blogModel_1.default({
-                photoUrl: "",
-                photoName: "",
-                postContent: fields.postContent,
-                tags: fields.tags,
-                author: fields.author,
-                catagory: fields.catagory,
-                date: fields.date,
-            });
-            let imageUrl;
-            const docID = credentials_2.blogRef.doc().id;
-            if (err) {
-                return res.status(400).json({
-                    message: "There was an error parsing the files",
-                    data: {},
-                    error: err,
-                });
-            }
-            if (profileImage.size == 0) {
-                // do nothing
-            }
-            else {
-                const imageResponse = yield credentials_2.bucket.upload(profileImage.path, {
-                    destination: `blogs/${profileImage.name}`,
-                    resumable: true,
-                    metadata: {
-                        metadata: {
-                            firebaseStorageDownloadTokens: blog.id,
-                        },
-                    },
-                });
-                // profile image url
-                imageUrl =
-                    downLoadPath +
-                        encodeURIComponent(imageResponse[0].name) +
-                        "?alt=media&token=" +
-                        blog.id;
-            }
-            let newblog = {
-                photoUrl: profileImage.size == 0 ? "" : imageUrl,
-            };
-            blog.photoUrl = photoUrl + newblog.photoUrl;
-            blog.photoName = profileImage.name;
-            uploadOnfireStore(credentials_2.blogRef, docID, newblog, res, blog);
-        }));
+        const file = credentials_2.bucket.file("blogs/" + photoName);
+        file.delete();
     }
     catch (err) {
-        res.send({
-            message: "Something went wrong",
-            data: {},
-            error: err,
-        });
+        return err;
     }
+}
+function findBlogData(_id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const id = _id;
+        const blog = yield blogModel_1.default.find({ _id: ObjectId(id) });
+        return blog;
+    });
+}
+const updateImageinBlog = function updateImage(profileImage, id, photoName) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log("in blog updating image", id);
+        const blog = yield blogModel_1.default.find({ _id: ObjectId(id) });
+        try {
+            console.log("in side try");
+            const imageResponse = yield credentials_2.bucket.upload(profileImage.path, {
+                destination: `blogs/${profileImage.name}`,
+                resumable: true,
+                metadata: {
+                    metadata: {
+                        firebaseStorageDownloadTokens: blog[0]._id,
+                    },
+                },
+            });
+            const imageUrl = encodeURIComponent(imageResponse[0].name) +
+                "?alt=media&token=" + blog[0]._id;
+            blog[0].photoUrl = photoUrl + imageUrl;
+            blog[0].photoName = photoName;
+            blog[0].save();
+            return blog;
+        }
+        catch (err) {
+            return err;
+        }
+    });
 };
-exports.updateImage = updateImage;
+exports.updateImageinBlog = updateImageinBlog;
+const update_blog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.body._id;
+    try {
+        yield blogModel_1.default.findByIdAndUpdate(id, req.body);
+        res.send(req.body);
+    }
+    catch (err) {
+        res.send(err);
+    }
+});
+exports.update_blog = update_blog;
 exports.default = router;
